@@ -90,6 +90,17 @@ export default function LeadManagement({ stage, currentUser }: LeadManagementPro
   //   queryKey: stage === 'universe' ? ['/api/leads/all'] : [`/api/leads/stage/${stage}`],
   // });
 
+// ✅ Automatically open OutreachTracker when URL has leadId (coming from Scheduled Tasks)
+useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+  const leadId = params.get("leadId");
+
+  if (leadId) {
+    console.log("Detected leadId from URL:", leadId);
+    setShowOutreachTracker(Number(leadId));
+  }
+}, []);
+
 
    // ✅ Fetch leads for this stage (typed & structured query key)
     const { data: leads = [], isLoading, error } = useQuery<LeadWithDetails[]>({

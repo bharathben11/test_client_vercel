@@ -5,6 +5,7 @@ import { Search, Calendar, Filter } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ScheduledTaskCard from "./ScheduledTaskCard";
 import type { Intervention, Lead, Company, Contact, User as UserType } from "@/lib/types";
+import { useLocation } from "wouter";
 
 interface ScheduledTasksPipelineProps {
   currentUser: UserType;
@@ -22,6 +23,7 @@ export default function ScheduledTasksPipeline({ currentUser }: ScheduledTasksPi
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [, navigate] = useLocation();
 
   // Fetch scheduled interventions
   const { data: scheduledTasks = [], isLoading } = useQuery<ScheduledIntervention[]>({
@@ -159,7 +161,12 @@ export default function ScheduledTasksPipeline({ currentUser }: ScheduledTasksPi
             <ScheduledTaskCard
               key={task.id}
               intervention={task}
-              onEdit={(id) => console.log('Edit intervention:', id)}
+              onEdit={() => {
+            // send the task info to /outreach
+            navigate(
+              `/outreach?interventionId=${task.id}&leadId=${task.lead.id}`
+             );
+             }}
               onComplete={(id) => console.log('Complete intervention:', id)}
             />
           ))}

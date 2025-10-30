@@ -10,6 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
 import { 
   Plus,
   Calendar,
@@ -225,6 +226,17 @@ export default function OutreachTracker({
 }: OutreachTrackerProps) {
   const { toast } = useToast();
   const [showAddForm, setShowAddForm] = useState(false);
+  // ✅ Auto-open Add Outreach form when coming from Scheduled Tasks
+// useEffect(() => {
+//   const params = new URLSearchParams(window.location.search);
+//   const interventionId = params.get("interventionId");
+
+//   if (interventionId) {
+//     console.log("Detected interventionId from URL:", interventionId);
+//     setShowAddForm(true);
+//   }
+// }, []);
+
   const [formData, setFormData] = useState({
     activityType: 'linkedin_request_self',
     status: 'completed' as 'completed' | 'scheduled' | 'sent' | 'received' | 'follow_up' | 'invalid',
@@ -248,11 +260,33 @@ export default function OutreachTracker({
   const [driveLink, setDriveLink] = useState('');
   const [isEditingDriveLink, setIsEditingDriveLink] = useState(false);
 
+useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+  const interventionId = params.get("interventionId");
+
+  if (interventionId) {
+    setShowAddForm(true);
+  }
+}, []);
+
+
   // Fetch outreach activities
   const { data: activities = [], isLoading } = useQuery<OutreachActivity[]>({
     queryKey: ['/outreach/lead', leadId],
     enabled: !!leadId,
   });
+  // --- detect if editing existing scheduled task ---
+  const [location] = useLocation();
+  const searchParams = new URLSearchParams(location.split("?")[1] || "");
+  const leadIdFromUrl = searchParams.get("leadId");
+  const interventionIdFromUrl = searchParams.get("interventionId");
+
+  // Auto-open Add Outreach form when coming from Scheduled Tasks
+  useEffect(() => {
+    if (interventionIdFromUrl) {
+      setShowAddForm(true);
+    }
+  }, [interventionIdFromUrl]);
 
   // Fetch documents (interventions with type='document') for Pitching/Mandates stages
   const { data: documents = [] } = useQuery<any[]>({
