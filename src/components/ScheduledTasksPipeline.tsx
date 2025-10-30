@@ -6,6 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import ScheduledTaskCard from "./ScheduledTaskCard";
 import type { Intervention, Lead, Company, Contact, User as UserType } from "@/lib/types";
 import { useLocation } from "wouter";
+import { Button } from "@/components/ui/button";
+
 
 interface ScheduledTasksPipelineProps {
   currentUser: UserType;
@@ -24,6 +26,7 @@ export default function ScheduledTasksPipeline({ currentUser }: ScheduledTasksPi
   const [filterType, setFilterType] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [, navigate] = useLocation();
+  const [showMyTasks, setShowMyTasks] = useState(false);
 
   // Fetch scheduled interventions
   const { data: scheduledTasks = [], isLoading } = useQuery<ScheduledIntervention[]>({
@@ -59,6 +62,17 @@ export default function ScheduledTasksPipeline({ currentUser }: ScheduledTasksPi
       }
     }
 
+    // "My Tasks" filter
+    if (showMyTasks) {
+      const isUserTask =
+        task.user?.id === currentUser.id ||               // task assigned to this user
+        task.lead?.assignedTo === currentUser.id ||       // lead assigned to this user
+        task.lead?.ownerAnalyst?.id === currentUser.id; // or created by this user
+
+      if (!isUserTask) return false; // skip tasks not belonging to user
+    }
+
+
     return matchesSearch && matchesType && matchesStatus;
   });
 
@@ -89,6 +103,15 @@ export default function ScheduledTasksPipeline({ currentUser }: ScheduledTasksPi
         <p className="text-muted-foreground">
           Upcoming outreach activities and scheduled interventions
         </p>
+      </div>
+        {/* "My Tasks" toggle button */}
+      <div className="flex justify-end">
+        <Button
+          variant={showMyTasks ? "default" : "outline"}
+          onClick={() => setShowMyTasks(!showMyTasks)}
+        >
+          {showMyTasks ? "Show All Tasks" : "My Tasks"}
+        </Button>
       </div>
 
       {/* Filters and Search */}
