@@ -158,7 +158,7 @@ useEffect(() => {
   // CSV upload mutation
   const csvUploadMutation = useMutation({
     mutationFn: async (csvData: string) => {
-      return apiRequest('POST', '/api/companies/csv-upload', { csvData });
+      return apiRequest('POST', '/companies/csv-upload', { csvData });
     },
     onSuccess: (data: any) => {
       // Invalidate the correct query key based on stage
