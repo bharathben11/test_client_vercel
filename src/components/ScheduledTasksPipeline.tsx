@@ -7,6 +7,8 @@ import ScheduledTaskCard from "./ScheduledTaskCard";
 import type { Intervention, Lead, Company, Contact, User as UserType } from "@/lib/types";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import OutreachCompletionForm from "./OutreachCompletionForm"; // ✅ new component we’ll create next
 
 
 interface ScheduledTasksPipelineProps {
@@ -27,6 +29,8 @@ export default function ScheduledTasksPipeline({ currentUser }: ScheduledTasksPi
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [, navigate] = useLocation();
   const [showMyTasks, setShowMyTasks] = useState(false);
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<ScheduledIntervention | null>(null);
 
   // Fetch scheduled interventions
   const { data: scheduledTasks = [], isLoading } = useQuery<ScheduledIntervention[]>({
@@ -113,6 +117,25 @@ export default function ScheduledTasksPipeline({ currentUser }: ScheduledTasksPi
           {showMyTasks ? "Show All Tasks" : "My Tasks"}
         </Button>
       </div>
+  
+
+      {/* ✅ Complete Task Modal */}
+      <Dialog open={showCompleteModal} onOpenChange={setShowCompleteModal}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Complete Outreach Task</DialogTitle>
+          </DialogHeader>
+
+          {selectedTask && (
+            <OutreachCompletionForm
+              task={selectedTask}
+              onClose={() => setShowCompleteModal(false)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+
 
       {/* Filters and Search */}
       <div className="flex flex-col sm:flex-row gap-4">
@@ -190,7 +213,12 @@ export default function ScheduledTasksPipeline({ currentUser }: ScheduledTasksPi
               `/outreach?interventionId=${task.id}&leadId=${task.lead.id}`
              );
              }}
-              onComplete={(id) => console.log('Complete intervention:', id)}
+              // onComplete={(id) => console.log('Complete intervention:', id)}
+              onComplete={(id) => {
+                const selected = scheduledTasks.find((t) => t.id === id);
+                setSelectedTask(selected || null);
+                setShowCompleteModal(true);
+              }}
             />
           ))}
         </div>
