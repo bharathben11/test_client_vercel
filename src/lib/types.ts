@@ -67,6 +67,7 @@ export interface Contact {
   isComplete: boolean;
   createdAt?: string;
   updatedAt?: string;
+  activityType?: string;
 }
 
 export interface Lead {
@@ -102,6 +103,7 @@ export interface Intervention {
   userId: string;
   type: 'linkedin_message' | 'call' | 'whatsapp' | 'email' | 'meeting' | 'document';
   scheduledAt: string;
+  activityType?: string;  // ✅ add this line
   notes?: string;
   documentName?: string;
   createdAt?: string;

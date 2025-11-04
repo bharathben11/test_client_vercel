@@ -17,6 +17,36 @@ import { SiLinkedin, SiWhatsapp } from "react-icons/si";
 import type { Intervention, Lead, Company, Contact, User as UserType } from "@/lib/types";
 import { formatDistanceToNow, format, isToday, isPast } from "date-fns";
 
+
+// 🔹 Mapping of backend codes → human-readable labels
+const activityTypeLabels: Record<string, string> = {
+  // LinkedIn Requests
+  linkedin_request_self: "LinkedIn Request (Self)",
+  linkedin_request_kvs: "LinkedIn Request (KVS)",
+  linkedin_request_dinesh: "LinkedIn Request (Dinesh)",
+
+  // LinkedIn Messages
+  linkedin_messages_self: "LinkedIn Messages (Self)",
+  linkedin_messages_kvs: "LinkedIn Messages (KVS)",
+  linkedin_messages_dinesh: "LinkedIn Messages (Dinesh)",
+
+  // WhatsApp
+  whatsapp: "WhatsApp",
+
+  // Emails
+  email_d0_analyst: "Email D0 (Analyst)",
+  email_d3_analyst: "Email D3 (Analyst)",
+  email_d7_kvs: "Email D7 (KVS)",
+
+  // Calls
+  call_d1_dinesh: "Call D1 (Dinesh)",
+
+  // Others
+  meeting: "Meeting",
+  document: "Document",
+};
+
+
 interface ScheduledTaskCardProps {
   intervention: Intervention & {
     lead: Lead & {
@@ -34,28 +64,58 @@ export default function ScheduledTaskCard({
   onEdit,
   onComplete
 }: ScheduledTaskCardProps) {
-  const { lead, user, scheduledAt, type, notes } = intervention;
+  const { lead, user, scheduledAt, notes } = intervention;
+  const activityType = intervention.activityType || intervention.type;
   const { company, contact } = lead;
+  const readableActivityLabel =
+  activityTypeLabels[activityType] || activityType || "Unknown";
 
   // Get activity type icon and label
-  const getActivityConfig = () => {
-    switch (type) {
-      case 'linkedin_message':
-        return { icon: SiLinkedin, label: 'LinkedIn Message', color: 'bg-blue-500' };
-      case 'call':
-        return { icon: Phone, label: 'Call', color: 'bg-green-500' };
-      case 'whatsapp':
-        return { icon: SiWhatsapp, label: 'WhatsApp', color: 'bg-green-500' };
-      case 'email':
-        return { icon: Mail, label: 'Email', color: 'bg-red-500' };
-      case 'meeting':
-        return { icon: Calendar, label: 'Meeting', color: 'bg-purple-500' };
-      case 'document':
-        return { icon: FileText, label: 'Document', color: 'bg-orange-500' };
-      default:
-        return { icon: MessageSquare, label: type, color: 'bg-gray-500' };
-    }
-  };
+  console.log("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");
+  console.log("Task activityType:", intervention.activityType || intervention.type);
+const getActivityConfig = () => {
+  switch (activityType) {
+    // 🔹 LinkedIn Requests
+    case 'linkedin_request_self':
+      return { icon: SiLinkedin, label: 'LinkedIn Request (Self)', color: 'bg-blue-500' };
+    case 'linkedin_request_kvs':
+      return { icon: SiLinkedin, label: 'LinkedIn Request (KVS)', color: 'bg-blue-500' };
+    case 'linkedin_request_dinesh':
+      return { icon: SiLinkedin, label: 'LinkedIn Request (Dinesh)', color: 'bg-blue-500' };
+
+    // 🔹 LinkedIn Messages
+    case 'linkedin_messages_self':
+      return { icon: SiLinkedin, label: 'LinkedIn Messages (Self)', color: 'bg-blue-500' };
+    case 'linkedin_messages_kvs':
+      return { icon: SiLinkedin, label: 'LinkedIn Messages (KVS)', color: 'bg-blue-500' };
+    case 'linkedin_messages_dinesh':
+      return { icon: SiLinkedin, label: 'LinkedIn Messages (Dinesh)', color: 'bg-blue-500' };
+
+    // 🔹 Other Platforms
+    case 'whatsapp':
+      return { icon: SiWhatsapp, label: 'WhatsApp', color: 'bg-green-500' };
+
+    case 'email_d0_analyst':
+      return { icon: Mail, label: 'Email D0 (Analyst)', color: 'bg-red-500' };
+    case 'email_d3_analyst':
+      return { icon: Mail, label: 'Email D3 (Analyst)', color: 'bg-red-500' };
+    case 'email_d7_kvs':
+      return { icon: Mail, label: 'Email D7 (KVS)', color: 'bg-red-500' };
+    case 'call_d1_dinesh':
+      return { icon: Phone, label: 'Call D1 (Dinesh)', color: 'bg-green-500' };
+
+    // 🔹 Generic
+    case 'meeting':
+      return { icon: Calendar, label: 'Meeting', color: 'bg-purple-500' };
+    case 'document':
+      return { icon: FileText, label: 'Document', color: 'bg-orange-500' };
+
+    // 🔹 Fallback
+    default:
+      return { icon: MessageSquare, label: activityType || 'Unknown', color: 'bg-gray-500' };
+  }
+};
+
 
   const activityConfig = getActivityConfig();
   const ActivityIcon = activityConfig.icon;
@@ -119,7 +179,7 @@ export default function ScheduledTaskCard({
             <ActivityIcon className={`h-4 w-4 ${activityConfig.color.replace('bg-', 'text-')}`} />
           </div>
           <span className="text-sm font-medium" data-testid={`activity-type-${intervention.id}`}>
-            {activityConfig.label}
+            {readableActivityLabel}
           </span>
         </div>
 

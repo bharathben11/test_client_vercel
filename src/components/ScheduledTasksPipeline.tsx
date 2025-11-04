@@ -37,6 +37,10 @@ export default function ScheduledTasksPipeline({ currentUser }: ScheduledTasksPi
     queryKey: ['interventions', 'scheduled'],
   });
 
+  console.log("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ ");
+  // 🔍 Debug: check what the backend actually sends
+  console.log("Scheduled task example:", scheduledTasks[0]);
+  
   // Filter and search logic
   const filteredTasks = scheduledTasks.filter(task => {
     // Search filter
@@ -195,7 +199,8 @@ export default function ScheduledTasksPipeline({ currentUser }: ScheduledTasksPi
         <div className="text-center py-12">
           <Calendar className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
           <h3 className="text-lg font-semibold mb-2">No scheduled tasks</h3>
-          <p className="text-muted-foreground">
+              queryKey: ['interventions', 'scheduled'],
+<p className="text-muted-foreground">
             {searchTerm || filterType !== "all" || filterStatus !== "all"
               ? "No tasks match your current filters"
               : "You don't have any upcoming scheduled activities"}

@@ -465,7 +465,11 @@ useEffect(() => {
 
   // Group activities by status
   const completedActivities = activities.filter(a => a.status === 'completed');
-  const scheduledActivities = activities.filter(a => a.status === 'scheduled');
+  // const scheduledActivities = activities.filter(a => a.status === 'scheduled');
+  const scheduledActivities = activities.filter(a =>
+  ['scheduled', 'received', 'follow_up'].includes(a.status)
+  );
+
 
   return (
     <div className="w-full max-w-5xl mx-auto p-6">
